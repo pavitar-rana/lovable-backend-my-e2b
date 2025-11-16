@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { prisma } from "../lib/prisma.ts";
-import { CreateTreeFile } from "../../helper/create-tree-file.ts";
+import { CreateTreeFile } from "../helper/create-tree-file.ts";
 import { runCommandInSandbox } from "../lib/helpers.ts";
 import { ProjectValidatorHttp, UserValidatorHttp } from "../validators/db.validators.ts";
 

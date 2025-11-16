@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { prisma } from "../lib/prisma.ts";
 import { createSandbox, runCommandInSandbox, streamToString, writeFileToSandbox } from "../lib/helpers.ts";
 import { VM_TO_HOST_PORT } from "../lib/constants.ts";
 import { blobServiceClient } from "../config/azureBlob.ts";
