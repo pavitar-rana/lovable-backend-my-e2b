@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.ts";
 
 export const UserValidatorSocket = async (userId, io) => {
   const user = await prisma.user.findUnique({

@@ -1,18 +1,23 @@
 import { streamText } from "ai";
 import { blobServiceClient } from "../config/azureBlob.ts";
-import { CreateTreeFile } from "../../helper/create-tree-file.ts";
+import { CreateTreeFile } from "../helper/create-tree-file.ts";
 import { createDirInSandbox, createSandbox, runCommandInSandbox } from "../lib/helpers.ts";
 import { prisma } from "../lib/prisma.ts";
 import { SYSTEM_PROMPT } from "../prompt.ts";
 import { google } from "@ai-sdk/google";
-import { updateFile } from "../../tools/index.ts";
+import { updateFile } from "../tools/index.ts";
 import { VM_TO_HOST_PORT } from "../lib/constants.ts";
+import { UserValidatorSocket } from "../validators/db.validators.ts";
 
 const startChatHandler = (io, socket) => {
   socket.on("startChat", async ({ prompt, messages, sandboxId, userId, projectId }) => {
     console.log("starting chat....");
     try {
       socket.join(userId);
+
+      const user = await UserValidatorSocket(userId, io);
+
+      if (!user) return;
 
       let project = await prisma.project.findUnique({
         where: {
