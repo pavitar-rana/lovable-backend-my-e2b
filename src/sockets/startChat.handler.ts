@@ -5,9 +5,22 @@ import { createDirInSandbox, createSandbox, runCommandInSandbox } from "../lib/h
 import { prisma } from "../lib/prisma.ts";
 import { SYSTEM_PROMPT } from "../prompt.ts";
 import { google } from "@ai-sdk/google";
-import { updateFile } from "../tools/index.ts";
+import { updateCreateFile } from "../tools/index.ts";
 import { VM_TO_HOST_PORT } from "../lib/constants.ts";
 import { UserValidatorSocket } from "../validators/db.validators.ts";
+import { createDeepAgent } from "deepagents";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { tool } from "langchain";
+import { startsWith, z } from "zod";
+import "dotenv/config";
+import { GraphRecursionError } from "@langchain/langgraph";
+import fs from "fs";
+
+const llm = new ChatGoogleGenerativeAI({
+  model: "gemini-2.5-pro",
+  temperature: 0,
+  maxRetries: 2,
+});
 
 const startChatHandler = (io, socket) => {
   socket.on("startChat", async ({ prompt, messages, sandboxId, userId, projectId }) => {
@@ -118,18 +131,30 @@ EOF`,
 
       const emit = (event: string, data: any) => io.to(userId).emit(event, data);
 
-      const response = streamText({
-        // model: google("gemini-2.5-pro"),
-        model: google("gemini-3-pro-preview"),
-        system: SYSTEM_PROMPT,
-        toolChoice: "required",
-        tools: {
-          updateFile: updateFile(sbxId, projectId, user.id, emit),
-        },
-        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-        maxRetries: 0,
-        // stopWhen: stepCountIs(1),
+      const agent = createDeepAgent({
+        model: llm,
+        tools: [updateCreateFile(sbxId, projectId, user.id, emit)],
+        systemPrompt: SYSTEM_PROMPT,
       });
+
+      const agentWithLimit = agent.graph.withConfig({
+        recursionLimit: 50,
+      });
+
+      // const response = streamText({
+      //   // model: google("gemini-2.5-pro"),
+      //   model: google("gemini-3-pro-preview"),
+      //   system: SYSTEM_PROMPT,
+      //   toolChoice: "required",
+      //   tools: {
+      //     updateCreateFile: updateCreateFile(sbxId, projectId, user.id, emit),
+      //   },
+      //   messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+      //   maxRetries: 0,
+      //   // stopWhen: stepCountIs(1),
+      // });
+
+      const response = await agentWithLimit.invoke({ messages });
 
       console.log("sandboxId : ", sandboxId);
       if (await response.content) {
@@ -137,13 +162,21 @@ EOF`,
         await CreateTreeFile(sbxId, projectId, userId);
       }
 
-      await prisma.message.create({
-        data: {
-          projectId: project.id,
-          role: "assistant",
-          content: JSON.stringify(await response.content, null, 2),
-        },
-      });
+      const aiReply = response.messages;
+      console.log("AI REPLY : ", aiReply[response.messages.length - 1].content);
+
+      // Write to logs.txt
+
+      const logMessage = `[${new Date().toISOString()}] AI REPLY: ${JSON.stringify(aiReply)}\n`;
+      fs.writeFileSync("logs.txt", logMessage, "utf-8");
+
+      // await prisma.message.create({
+      //   data: {
+      //     projectId: project.id,
+      //     role: "assistant",
+      //     content: JSON.stringify(await response.content, null, 2),
+      //   },
+      // });
 
       emit("ai:done", {
         url,
@@ -195,7 +228,9 @@ EOF`,
       }
     } catch (err) {
       console.error("Error:", err);
-      io.to(userId).emit("error", { message: err.message });
+      if (!err.message?.startsWith("GraphRecursionError: Recursion limit")) {
+        io.to(userId).emit("error", { message: err.message });
+      }
     }
   });
 };

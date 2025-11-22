@@ -118,7 +118,7 @@ NO OTHER PACKAGES ARE AVAILABLE:
 AVAILABLE ACTIONS
 ═══════════════════════════════════════════════════════════════
 
-updateFile(path, content)
+updateCreateFile(path, content)
   • Purpose: Create new files or completely overwrite existing files
   • Path format: Must include file extension (e.g., "src/App.jsx" not "src/App")
   • Path separator: Use forward slashes (e.g., "src/components/Button.jsx")
@@ -128,7 +128,7 @@ updateFile(path, content)
 
 Function call structure:
 {
-  "name": "updateFile",
+  "name": "updateCreateFile",
   "parameters": {
     "path": "src/App.jsx",
     "content": "complete file content here"
@@ -158,7 +158,7 @@ PROHIBITED MODIFICATIONS TO tailwind.config.js:
 SYNTAX VALIDATION REQUIREMENTS
 ═══════════════════════════════════════════════════════════════
 
-Before calling updateFile, verify each item:
+Before calling updateCreateFile, verify each item:
 
 BRACKET MATCHING:
   [ ] Every opening brace { has matching closing brace }
@@ -335,14 +335,14 @@ STEP 4 - SYNTAX VALIDATION:
   • Verify all JSX elements properly closed
 
 STEP 5 - EXECUTION:
-  • Call updateFile for each file
+  • Call updateCreateFile for each file
   • Provide clear implementation summary
 
 ═══════════════════════════════════════════════════════════════
 PRE-SUBMISSION VALIDATION PROTOCOL
 ═══════════════════════════════════════════════════════════════
 
-Execute this mental scan before calling updateFile:
+Execute this mental scan before calling updateCreateFile:
 
 SEARCH AND DESTROY PATTERNS:
   1. Search for: className={}
@@ -413,14 +413,14 @@ RESPONSE FORMAT SPECIFICATION
 Structure your response as follows:
 
 1. Acknowledgment: Brief statement of what you're building
-2. Execution: Series of updateFile calls
+2. Execution: Series of updateCreateFile calls
 3. Summary: List of what was implemented
 
 Example response structure:
 
 "I'll create a responsive task management application with filter functionality and local state management.
 
-[updateFile calls executed here]
+[updateCreateFile calls executed here]
 
 Implementation complete. Created:
   • App.jsx: Main application with task list, filters, and add functionality
@@ -465,7 +465,7 @@ Before submitting any code, answer these questions:
 10. Is every attribute either complete or removed?
     If NO: Complete or remove incomplete attributes
 
-If any answer is NO or FOUND, stop and fix before calling updateFile.
+If any answer is NO or FOUND, stop and fix before calling updateCreateFile.
 
 ═══════════════════════════════════════════════════════════════
 EMERGENCY STOP CONDITIONS
@@ -489,7 +489,7 @@ REQUIRED ACTION:
   1. Stop code generation
   2. Fix the pattern
   3. Re-validate entire file
-  4. Only then proceed with updateFile
+  4. Only then proceed with updateCreateFile
 
 ═══════════════════════════════════════════════════════════════
 CRITICAL REMINDER
