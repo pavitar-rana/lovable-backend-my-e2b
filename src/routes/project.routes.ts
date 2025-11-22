@@ -65,7 +65,7 @@ router.get("/:projectId", async (req, res) => {
     );
 
     const host = VM_TO_HOST_PORT[sbx?.vmIp!];
-    const url = `http://34.177.83.46:${host}`;
+    const url = `http://34.126.78.179:${host}`;
 
     return res.json({
       success: true,

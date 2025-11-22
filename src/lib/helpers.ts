@@ -9,7 +9,7 @@ export const writeFileToSandbox = async (
 ) => {
   console.log("writing file : ", path);
   console.log("writing file for user: ", userId);
-  const res = await axios.post("https://firecracker.pavitr.cloud/api/write", {
+  const res = await axios.post("https://firecracker.pavitr.cloud/api/firecracker/exec/write", {
     id,
     path,
     content,
@@ -22,7 +22,7 @@ export const writeFileToSandbox = async (
 
 export const runCommandInSandbox = async (command: string, id: string, userId: string, projectId: string) => {
   console.log("Trying to run command : ", command);
-  const res = await axios.post("https://firecracker.pavitr.cloud/api/run", {
+  const res = await axios.post("https://firecracker.pavitr.cloud/api/firecracker/exec/run", {
     command,
     id,
     userId,
@@ -34,7 +34,7 @@ export const runCommandInSandbox = async (command: string, id: string, userId: s
 
 export const createSandbox = async (userId: string) => {
   console.log("creating sandbox for userid: ", userId);
-  const res = await axios.post("https://firecracker.pavitr.cloud/api/create", {
+  const res = await axios.post("https://firecracker.pavitr.cloud/api/firecracker/create", {
     userId,
   });
 
@@ -44,7 +44,7 @@ export const createSandbox = async (userId: string) => {
 };
 
 export const createDirInSandbox = async (path: string, userId: string, id: string) => {
-  const res = await axios.post("https://firecracker.pavitr.cloud/api/create-dir", {
+  const res = await axios.post("https://firecracker.pavitr.cloud/api/firecracker/exec/create-dir", {
     userId,
     path,
     id,

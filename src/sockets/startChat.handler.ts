@@ -111,7 +111,7 @@ EOF`,
       }
 
       const host = VM_TO_HOST_PORT[sbx?.vmIp!];
-      const url = `http://34.177.83.46:${host}`;
+      const url = `http://34.126.78.179:${host}`;
 
       new Promise((r) => setTimeout(r, 2000));
       io.to(userId).emit("sandbox:connected", { sandboxId: sbxId, url });
@@ -119,13 +119,14 @@ EOF`,
       const emit = (event: string, data: any) => io.to(userId).emit(event, data);
 
       const response = streamText({
-        model: google("gemini-2.5-pro"),
+        // model: google("gemini-2.5-pro"),
+        model: google("gemini-3-pro-preview"),
         system: SYSTEM_PROMPT,
         toolChoice: "required",
         tools: {
           updateFile: updateFile(sbxId, projectId, user.id, emit),
         },
-        messages,
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
         maxRetries: 0,
         // stopWhen: stepCountIs(1),
       });
